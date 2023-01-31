@@ -1,0 +1,178 @@
+package expressionTree;
+import java.util.Scanner;
+
+public class ExpressionTree{
+	private static class Node {
+
+		public Object element;
+		public Node leftChild;
+		public Node rightChild;
+
+		public Node (Object o) {
+			this (o, null, null);
+		}
+
+		public Node (Object o, Node l, Node r) {
+			element = o;
+			leftChild = l;
+			rightChild = r;
+		}
+
+		public Object getE() {
+			return element;
+		}
+
+		public Node getL() {
+			return leftChild;
+		}
+
+		public Node getR() {
+			return rightChild;
+		}
+
+		public String toString() {
+			return element.toString();
+		}
+	}
+
+	private static class LinkedStack<E> {
+		private SinglyLinkedList<E> list = new SinglyLinkedList<>();   // an empty list
+
+		/** Constructs an initially empty stack. */
+		public LinkedStack() { }                   // new stack relies on the initially empty list
+
+
+		public int size() { return list.size(); }
+
+
+		public boolean isEmpty() { return list.isEmpty(); }
+
+
+		public void push(E element) { list.addFirst(element); }
+
+
+		public E top() { return list.first(); }
+
+
+		public E pop() { return list.removeFirst(); }
+
+
+		public String toString() {
+			return list.toString();
+
+		}
+	}
+
+	private Node parent;
+
+	public boolean isEmpty() {
+		return parent == null;
+	}
+
+	public ExpressionTree(Node parent) {
+		this.parent = parent;
+	}
+
+	public static boolean isOperator(Object element) {
+		if (element.equals("-") || element.equals("/") || element.equals("+") || element.equals("*") || element.equals("^")) {
+			return true;
+		}
+		else return false;
+	}
+
+	public static boolean isNumeric(String str) {
+		return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+	}
+
+	public static ExpressionTree convert(String postfix) {
+		LinkedStack<Node> stack = new LinkedStack<>();
+		String[] split = postfix.split(" ");
+		Node temp, t1, t2;
+		ExpressionTree et;
+		for (int i = 0; i < split.length; i++) {
+			if (!isOperator(split[i])){
+				temp = new Node(split[i]);
+				stack.push(temp);
+			}
+
+			else {	
+
+				t1 = stack.pop();
+				t2 = stack.pop();
+
+				temp = new Node(split[i], t2, t1);
+				stack.push(temp);
+			}
+		}
+		et = new ExpressionTree(stack.pop());
+		return et;
+	}
+
+	public void prefix( ) { 
+		if ( parent == null ) return;
+		System.out.print ( parent.element + " ") ;  
+		ExpressionTree l = new ExpressionTree(parent.leftChild);
+		ExpressionTree r = new ExpressionTree(parent.rightChild);
+		l.prefix() ; 
+		r.prefix() ;  
+
+	}  
+
+	public void postfix() {
+		if (parent == null) return;
+		ExpressionTree l = new ExpressionTree(parent.leftChild);
+		ExpressionTree r = new ExpressionTree(parent.rightChild);
+		l.postfix();
+		r.postfix();
+		System.out.print(parent.element + " ");
+	}
+
+	public void infix() {
+		if (parent == null) return;
+		if (isOperator(parent.element)) { // if is an operator!!
+			System.out.print("( ");
+		}
+		ExpressionTree l = new ExpressionTree(parent.leftChild);
+		ExpressionTree r = new ExpressionTree(parent.rightChild);
+		l.infix();
+		System.out.print(parent.element + " ");
+		r.infix();
+
+		if (isOperator(parent.element)) {
+			System.out.print(") ");
+		}
+	}
+
+
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		while (true) {
+			System.out.println("Enter the equation (or 'e' to exit): ");
+			String i = input.next();
+			if (i.equals("e") || i.equals("E")) break;
+
+			PF u = new PF(i);
+			String h = u.toPostfix(i);
+			ExpressionTree r = convert(h);
+			System.out.println("Converted to post-fix: " + h );
+
+			System.out.print("\nPrefix: ");
+			r.prefix();
+			System.out.print("\n\nInfix: ");
+			r.infix();
+			System.out.print("\n\nPostfix: ");
+			r.postfix();
+			System.out.println();
+			System.out.println();
+
+		}
+
+	}
+
+}
+
+
+
+
+
+
