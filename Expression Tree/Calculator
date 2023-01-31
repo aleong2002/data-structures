@@ -1,0 +1,104 @@
+package expressionTree;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+
+public class Calculator {
+	
+	private static class LinkedStack<E> {
+		  private SinglyLinkedList<E> list = new SinglyLinkedList<>();   // an empty list
+
+		  /** Constructs an initially empty stack. */
+		  public LinkedStack() { }                   // new stack relies on the initially empty list
+
+		  
+		  public int size() { return list.size(); }
+
+		  
+		  public boolean isEmpty() { return list.isEmpty(); }
+
+		  
+		  public void push(E element) { list.addFirst(element); }
+
+		  
+		  public E top() { return list.first(); }
+
+		  
+		  public E pop() { return list.removeFirst(); }
+
+		 
+		  public String toString() {
+		    return list.toString();
+		  
+		}
+	}
+	
+	protected static List<String> parse(char[] input) {
+	    List<String> parsed = new ArrayList<String>();
+	    for (int i = 0; i < input.length; ++i) {
+	        char c = input[i];
+	        if (Character.isDigit(c)) {
+	            String number = input[i] + "";
+	            for (int j = i + 1; j < input.length; ++j) {
+	                if (Character.isDigit(input[j])) {
+	                    number += input[j];
+	                    i = j;
+	                } else {
+	                    break;
+	                }
+	            }
+	            parsed.add(number);
+	        } else if (c == '*' || c == '/' || 
+	                   c == '+' || c == '^' || 
+	                   c == '-' || c == '(' || c == ')') {
+	            parsed.add(c + "");
+	        }
+	    }
+	    return parsed;
+	}
+	
+	public Calculator(String str) {
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object calculate(String postfix) {
+		LinkedStack d = new LinkedStack<String>();
+		char[] x = postfix.replaceAll(" ","").toCharArray();
+    	parse(x);
+    	
+		for (int i = 0; i < x.length;i++) {
+			if (Character.isDigit(x[i])) { 
+				d.push((double)x[i] - '0');
+			}
+			else{
+				double n1 = (double) d.pop();
+                double n2 = (double) d.pop();
+                
+            	switch (x[i]) {
+           			case '+': d.push(n2 + n1); break;
+           			case '-': d.push(n2 - n1); break;
+           			case '*': d.push(n2 * n1); break;
+           			case '/': d.push(n2 / n1); break;
+           			case '^': d.push(Math.pow(n2, n1));
+            	}
+				
+			}
+		}
+		return d.pop();
+	}
+	
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+    	
+    	System.out.println("Type in-fix equation: ");
+    	String i = input.nextLine();
+    	PF u = new PF(i);
+		String h = u.toPostfix(i);
+    	System.out.println("Converted to post-fix: " + h);
+    	System.out.println("Answer: " + calculate(h));
+    	
+    	input.close();
+	}
+}
