@@ -1,0 +1,208 @@
+package expressionTree;
+
+
+public class SinglyLinkedList<E> implements Cloneable {
+	private static class Node<E>{
+		private Node<E> next;
+		private E elem;
+		
+		public Node(E e) {
+			this.elem = e;
+		}
+		public Node(E e, Node<E> n) {
+			this.elem = e;
+			this.next = n;
+		}
+		
+		public E getElement() {
+			return elem;
+		}
+		
+		public void setElement(E elem) {
+			this.elem = elem;
+		}
+		
+		public Node<E> getNext() {
+			return this.next;
+		}
+		
+		public void setNext(Node n) {
+			next = n;
+		}
+		
+	}
+	
+	private Node<E> head = null;
+	private Node<E> tail = null;
+	private int size = 0;
+	
+	public SinglyLinkedList() {
+		
+	}
+	
+	public int size() {
+		return size;
+	}
+	
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
+	public E first() {
+		if (isEmpty()) return null;
+		return head.getElement();
+	}
+	
+	public E last() {
+		if (isEmpty()) return null;
+		return tail.getElement();
+	}
+	
+	public void addFirst(E elem) {
+		head = new Node<E>(elem, head);
+		if (isEmpty()) tail = head;
+		size++;
+	}
+	
+	public void addLast(E elem) {
+		Node<E> newest = new Node<>(elem, null);
+		if (isEmpty()) head = newest;
+		else {
+			tail.setNext(newest);
+		}
+		tail = newest;
+		size++;
+	}
+	
+	public E removeFirst() {
+		if (isEmpty()) return null;
+		
+		E ans = head.getElement();
+		head = head.getNext();
+		size--;
+		if (isEmpty()) tail = null;
+		return ans;
+		
+	}
+	
+	public E removeLast() {
+		if (isEmpty()) return null;
+		if (size == 1) return removeFirst();
+		
+		E ans = tail.getElement();
+		Node<E> walk = head;
+		
+		while (walk.getNext() != null) {
+			walk = walk.next;
+		}
+		tail = walk;
+		tail.setNext(null);
+		size--;
+		return ans;
+	}
+	
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (getClass() != o.getClass()) return false;
+		SinglyLinkedList other = (SinglyLinkedList) o;
+		if (size != other.size) return false;
+		
+		Node w1 = head;
+		Node w2 = other.head;
+		while (w1 != null) {
+			if (!w1.getElement().equals(w2.getElement())) return false;
+			w1 = w1.getNext();
+			w2 = w2.getNext();
+		}
+		return true;
+	}
+	
+	 public boolean find(E value) 
+	  { 
+	    Node<E> walk = head;
+	    while (walk != null)
+	    {
+		    if (walk.getElement().equals(value))
+			    return true;
+	  		walk = walk.getNext();
+	  	}     
+	  	return false;
+	  }
+	 
+	 public Node<E> locate(E val) {
+		 Node<E> walk = head;
+		 while (walk != null) {
+			 if (walk.getElement().equals(val)) return walk;
+			 walk = walk.getNext();
+		 }
+		 return null;
+	 }
+	 
+	 public Node<E> locatePrior(E val) {
+		 if (isEmpty()) return null;
+		 
+		 Node<E> walk = head;
+		 while (walk.getNext()!= null) {
+			 if(walk.getNext().equals(val)) return walk.getNext();
+			 walk = walk.getNext();
+		 }
+		 return null;
+	 }
+	 
+	 public boolean insertAfter(E valueToInsertAfter, E newValue) {
+		 Node<E> locate = locate(valueToInsertAfter);
+		 
+		 if (locate == null) return false;
+		 else {
+			 Node<E> newest = new Node<>(newValue, locate.getNext());
+			 locate.setNext(newest);
+			 if (locate == tail) tail = newest;
+			 size++;
+			 return true;
+		 }
+	 }
+	 
+	 public boolean insertBefore(E valueToInsertBefore, E newValue) {
+		 if (isEmpty()) return false;
+		 
+		 if(head.getElement().equals(valueToInsertBefore)) {
+			 Node<E> newest = new Node<>(newValue, head);
+			 tail = head.getNext();
+			 size++;
+			 return true;
+		 }
+		 
+		 Node<E> locate = locatePrior(valueToInsertBefore);
+		 
+		 if (locate == null) return false;
+		 else {
+			 Node<E> newest = new Node<>(newValue, locate.getNext());
+			 locate.setNext(newest);
+			 if (locate == head) head = newest;
+			 size++;
+			 return true;
+		 }
+	 }
+	 
+	 public void insert(int position, E val) {
+		 Node<E> newest = new Node<>(val);
+		 if (position == 1) {
+			 newest.next = head;
+			 head = newest;
+		 }
+		 else {
+			 Node<E> prev = head;
+			 int count = 1;
+			 
+			 while(count < position - 1) {
+				 prev = prev.next;
+				 count++;
+			 }
+			 Node<E> current = prev.next;
+			 prev.next = newest;
+			 newest.next = current;
+		 }
+		 
+		 
+	 }
+}
