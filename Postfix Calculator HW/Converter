@@ -1,0 +1,403 @@
+package DSHw2;
+import java.util.*;
+
+
+public class Converter {
+	private class SinglyLinkedList1<E> implements Cloneable{
+
+		private static class Node<E>{
+			private Node<E> next;
+			private E elem;
+			
+			public Node(E e) {
+				this.elem = e;
+			}
+			public Node(E e, Node<E> n) {
+				this.elem = e;
+				this.next = n;
+			}
+			
+			public E getElement() {
+				return elem;
+			}
+			
+			public void setElement(E elem) {
+				this.elem = elem;
+			}
+			
+			public Node<E> getNext() {
+				return this.next;
+			}
+			
+			public void setNext(Node n) {
+				next = n;
+			}
+			
+		}
+		
+		private Node<E> head = null;
+		private Node<E> tail = null;
+		private int size = 0;
+		
+		public SinglyLinkedList1() {
+			
+		}
+		
+		public int size() {
+			return size;
+		}
+		
+		public boolean isEmpty() {
+			return size == 0;
+		}
+		
+		public E first() {
+			if (isEmpty()) return null;
+			return head.getElement();
+		}
+		
+		public E last() {
+			if (isEmpty()) return null;
+			return tail.getElement();
+		}
+		
+		public void addFirst(E elem) {
+			head = new Node<E>(elem, head);
+			if (isEmpty()) tail = head;
+			size++;
+		}
+		
+		public void addLast(E elem) {
+			Node<E> newest = new Node<>(elem, null);
+			if (isEmpty()) head = newest;
+			else {
+				tail.setNext(newest);
+			}
+			tail = newest;
+			size++;
+		}
+		
+		public E removeFirst() {
+			if (isEmpty()) return null;
+			
+			E ans = head.getElement();
+			head = head.getNext();
+			size--;
+			if (isEmpty()) tail = null;
+			return ans;
+			
+		}
+		
+		public E removeLast() {
+			if (isEmpty()) return null;
+			if (size == 1) return removeFirst();
+			
+			E ans = tail.getElement();
+			Node<E> walk = head;
+			
+			while (walk.getNext() != null) {
+				walk = walk.next;
+			}
+			tail = walk;
+			tail.setNext(null);
+			size--;
+			return ans;
+		}
+		
+		public boolean equals(Object o) {
+			if (o == null) return false;
+			if (getClass() != o.getClass()) return false;
+			SinglyLinkedList1 other = (SinglyLinkedList1) o;
+			if (size != other.size) return false;
+			
+			Node w1 = head;
+			Node w2 = other.head;
+			while (w1 != null) {
+				if (!w1.getElement().equals(w2.getElement())) return false;
+				w1 = w1.getNext();
+				w2 = w2.getNext();
+			}
+			return true;
+		}
+		
+		 public boolean find(E value) 
+		  { 
+		    Node<E> walk = head;
+		    while (walk != null)
+		    {
+			    if (walk.getElement().equals(value))
+				    return true;
+		  		walk = walk.getNext();
+		  	}     
+		  	return false;
+		  }
+		 
+		 public Node<E> locate(E val) {
+			 Node<E> walk = head;
+			 while (walk != null) {
+				 if (walk.getElement().equals(val)) return walk;
+				 walk = walk.getNext();
+			 }
+			 return null;
+		 }
+		 
+		 public Node<E> locatePrior(E val) {
+			 if (isEmpty()) return null;
+			 
+			 Node<E> walk = head;
+			 while (walk.getNext()!= null) {
+				 if(walk.getNext().equals(val)) return walk.getNext();
+				 walk = walk.getNext();
+			 }
+			 return null;
+		 }
+		 
+		 public boolean insertAfter(E valueToInsertAfter, E newValue) {
+			 Node<E> locate = locate(valueToInsertAfter);
+			 
+			 if (locate == null) return false;
+			 else {
+				 Node<E> newest = new Node<>(newValue, locate.getNext());
+				 locate.setNext(newest);
+				 if (locate == tail) tail = newest;
+				 size++;
+				 return true;
+			 }
+		 }
+		 
+		 public boolean insertBefore(E valueToInsertBefore, E newValue) {
+			 if (isEmpty()) return false;
+			 
+			 if(head.getElement().equals(valueToInsertBefore)) {
+				 Node<E> newest = new Node<>(newValue, head);
+				 tail = head.getNext();
+				 size++;
+				 return true;
+			 }
+			 
+			 Node<E> locate = locatePrior(valueToInsertBefore);
+			 
+			 if (locate == null) return false;
+			 else {
+				 Node<E> newest = new Node<>(newValue, locate.getNext());
+				 locate.setNext(newest);
+				 if (locate == head) head = newest;
+				 size++;
+				 return true;
+			 }
+		 }
+		 
+		 public void insert(int position, E val) {
+			 Node<E> newest = new Node<>(val);
+			 if (position == 1) {
+				 newest.next = head;
+				 head = newest;
+			 }
+			 else {
+				 Node<E> prev = head;
+				 int count = 1;
+				 
+				 while(count < position - 1) {
+					 prev = prev.next;
+					 count++;
+				 }
+				 Node<E> current = prev.next;
+				 prev.next = newest;
+				 newest.next = current;
+			 }
+			 
+			 
+		 }
+	}
+	 
+	public class LinkedStack<E> implements Stack<E> {
+		private static class Node<E> {
+			private E data;
+			private Node<E> next;
+			
+			public Node() {
+				
+			}
+			
+			public Node(E data) {
+				this.data = data;
+			}
+			
+			public Node(E data, Node<E> next) {
+				this.data = data;
+				this.next = next;
+			}
+			
+			public E getElement() {
+				return data;
+			}
+			
+			public Node<E> getNext() {
+				return next;
+			}
+			
+			public void setNext(Node<E> n) {
+				next = n;
+			}
+			
+			public void setElement(E e) {
+				data = e;
+			}
+		}
+		
+		private SinglyLinkedList1<E> list = new SinglyLinkedList1<>();
+		
+		public LinkedStack() {
+			
+		}
+		
+		@Override
+		public int size() {
+			return list.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return list.size() == 0;
+		}
+
+		@Override
+		public E pop() {
+			if (isEmpty()) return null;
+			return list.removeFirst();
+		}
+
+		@Override
+		public void push(E e) {
+			list.addFirst(e);
+		}
+
+		@Override
+		public E top() {
+			return list.first();
+		}
+
+	}
+	
+	public String input;
+	
+	public Converter(String input) {
+		this.input = input;
+	}
+	
+	public int precedence(Object c) {
+		switch ((char) c) {
+		case '+': 
+		case '-': return 1;
+			
+		case '*': 
+		case '/': return 2;
+		
+		case '^': return 3;
+		}
+		return -1;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String toPostFix(String input) {
+		LinkedStack as = new LinkedStack<String>();
+		String result = "";
+    	char[] x = input.toCharArray();
+    	parse(x);
+    	
+    	for (int i = 0; i < x.length; i++) {
+    		if (Character.isDigit(x[i])) result += x[i];
+    		
+    		else if (x[i] == '(') as.push(x[i]);
+    		
+    		else if (x[i] == ')') {
+    			char h = (char) as.pop();
+                while(h !='('){
+                    result += h;
+                    h = (char) as.pop();
+                }
+    		}
+    		else if (precedence(x[i])>0){
+                while(!as.isEmpty() && precedence(as.peek()) >= precedence(x[i])){
+                    result += as.pop() + " ";
+                }
+                as.push(x[i]);
+    		}
+    	}
+    	for (int i = 0; i <= as.size(); i++) {
+    		result += as.pop();
+    	}
+		return result;
+   	}
+	
+	public static boolean isNumeric(String str) {
+		  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+		}
+	
+	@SuppressWarnings("unchecked")
+	public String toPostfix(String input) {
+		List<String> x = parse(input.toCharArray());
+		LinkedStack stack = new LinkedStack<String>();
+		String result = "";
+		
+		for (int i = 0; i < x.size(); i++) {
+			if (isNumeric(x.get(i))) {
+				result += x.get(i);
+			}  
+			else if (x.get(i) == "(") 
+				stack.push(x.get(i));
+			
+			else if (x.get(i) ==  ")") {
+				String h = (String) stack.pop();
+                while(!h.equals(")")){
+                    result += h;
+                    h = (String) stack.pop();
+                }
+			}
+			
+			else if (precedence(x.get(i))>0){
+                while(!stack.isEmpty() && precedence(stack.top()) >= precedence(x.get(i))){
+                    result += stack.pop() + " ";
+                }
+                stack.push(x.get(i));
+    		}
+			 		
+    	}
+    	for (int i = 0; i <= stack.size(); i++) {
+    		result += stack.pop();
+    	}
+		return result;
+   	}
+	protected static List<String> parse(char[] input) {
+	    List<String> parsed = new ArrayList<String>();
+	    for (int i = 0; i < input.length; ++i) {
+	        char c = input[i];
+	        if (Character.isDigit(c)) {
+	            String number = input[i] + "";
+	            for (int j = i + 1; j < input.length; ++j) {
+	                if (Character.isDigit(input[j])) {
+	                    number += input[j];
+	                    i = j;
+	                } else {
+	                    break;
+	                }
+	            }
+	            parsed.add(number);
+	        } else if (c == '*' || c == '/' || 
+	                   c == '+' || c == '^' || 
+	                   c == '-' || c == '(' || c == ')') {
+	            parsed.add(c + "");
+	        }
+	    }
+	    return parsed;
+	}
+    
+    public static void main(String[] args) {
+    	Scanner input = new Scanner(System.in);
+    	
+    	System.out.println("Enter equation: ");
+    	String i = input.nextLine();
+    	Converter u = new Converter(i);
+    	System.out.println(u.toPostFix(i));
+    }
+}
