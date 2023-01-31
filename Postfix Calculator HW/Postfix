@@ -1,0 +1,166 @@
+package DSHw2;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class Postfix {
+	class ArrayStack<E> implements Stack<E> {
+		  public static final int CAPACITY=1000;
+
+		  /** Generic array used for storage of stack elements. */
+		  public E[] data; 
+
+		  /** Index of the top element of the stack in the array. */
+		  private int t = -1; 
+
+		  /** Constructs an empty stack using the default array capacity. */
+		  public ArrayStack() { this(CAPACITY); }
+
+		  /**
+		   * Constructs and empty stack with the given array capacity.
+		   */
+		  @SuppressWarnings({"unchecked"})
+		  public ArrayStack(int capacity) {     
+		    data = (E[]) new Object[capacity]; 
+		  }
+
+		  /**
+		   * Returns the number of elements in the stack.
+		   */
+		  
+		  public int size() { return (t + 1); }
+
+		  /**
+		   * Tests whether the stack is empty.
+		   */
+		  public boolean isEmpty() { return (t == -1); }
+
+		  /**
+		   * Inserts an element at the top of the stack.
+		   */
+		  public void push(E e) throws IllegalStateException {
+		    if (size() == data.length) throw new IllegalStateException("Stack is full");
+		    data[++t] = e;
+		  }
+
+		  /**
+		   * Returns, but does not remove, the element at the top of the stack.
+		   */
+		  
+		  public E top() {
+		    if (isEmpty()) return null;
+		    return data[t];
+		  }
+
+		  /**
+		   * Removes and returns the top element from the stack.
+		   */
+		  public E pop() {
+		    if (isEmpty()) return null;
+		    E answer = data[t];
+		    data[t] = null;  
+		    t--;
+		    return answer;
+		  }
+		  
+		  public E peek() {
+			  if (isEmpty()) return null;
+			  return top();
+		  }
+
+		  /**
+		   * Produces a string representation of the contents of the stack.
+		   * (ordered from top to bottom). This exists for debugging purposes only.
+		   */
+		  public String toString() {
+		    StringBuilder sb = new StringBuilder("(");
+		    for (int j = t; j >= 0; j--) {
+		      sb.append(data[j]);
+		      if (j > 0) sb.append(", ");
+		    }
+		    sb.append(")");
+		    return sb.toString();
+		  }
+	}
+	
+	public String input;
+	
+	
+	public Postfix(String input) {
+		this.input = input;
+	}
+	
+	public int precedence(Object c) {
+		switch ((char) c) {
+		case '+': 
+		case '-': return 1;
+			
+		case '*': 
+		case '/': return 2;
+		
+		case '^': return 3;
+		}
+		return -1;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String toPostFix(String input) {
+		ArrayStack as = new ArrayStack<String>();
+		String result = "";
+  	char[] x = input.toCharArray();
+  	parse(x);
+  	
+  	for (int i = 0; i < x.length; i++) {
+  		if (Character.isDigit(x[i])) result += x[i] + " ";
+  		
+  		else if (x[i] == '(') as.push(x[i]);
+  		
+  		else if (x[i] == ')') {
+  			char h = (char) as.pop();
+              while(h !='('){
+                  result += h + " ";
+                  h = (char) as.pop();
+              }
+  		}
+  		else if (precedence(x[i])>0){
+              while(!as.isEmpty() && precedence(as.peek()) >= precedence(x[i])){
+                  result += as.pop() + " ";
+              }
+              as.push(x[i]);
+  		}
+  	}
+  	for (int i = 0; i <= as.size(); i++) {
+  		result += as.pop() + " ";
+  	}
+		return result;
+ 	}
+	
+	
+	protected static List<String> parse(char[] input) {
+	    List<String> parsed = new ArrayList<String>();
+	    for (int i = 0; i < input.length; ++i) {
+	        char c = input[i];
+	        if (Character.isDigit(c)) {
+	            String number = input[i] + "";
+	            for (int j = i + 1; j < input.length; ++j) {
+	                if (Character.isDigit(input[j])) {
+	                    number += input[j];
+	                    i = j;
+	                } else {
+	                    break;
+	                }
+	            }
+	            parsed.add(number);
+	        } else if (c == '*' || c == '/' || 
+	                   c == '+' || c == '^' || 
+	                   c == '-' || c == '(' || c == ')') {
+	            parsed.add(c + "");
+	        }
+	    }
+	    return parsed;
+	}
+	
+	
+}
