@@ -1,0 +1,139 @@
+package expressionTree;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PF {
+	private static class LinkedStack<E> {
+		  private SinglyLinkedList<E> list = new SinglyLinkedList<>();   // an empty list
+
+		  /** Constructs an initially empty stack. */
+		  public LinkedStack() { }                   // new stack relies on the initially empty list
+
+		  
+		  public int size() { return list.size(); }
+
+		  
+		  public boolean isEmpty() { return list.isEmpty(); }
+
+		  
+		  public void push(E element) { list.addFirst(element); }
+
+		  
+		  public E top() { return list.first(); }
+
+		  
+		  public E pop() { return list.removeFirst(); }
+
+		 
+		  public String toString() {
+		    return list.toString();
+		  
+		}
+	}
+
+	public String input;
+	int index = 0;
+	
+	public PF(String input) {
+		this.input = input;
+	}
+	
+	public int precedence(String c) {
+		switch (c) {
+		case "+":
+		case "-": return 1;
+			
+		case "*": 
+		case "/": return 2;
+		
+		case "^": return 3;
+		}
+		return 0;
+	}
+	
+	public static boolean isNumeric(String str) {
+		  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+	}
+	
+	protected static List<String> parse(char[] input) {
+	    List<String> parsed = new ArrayList<String>();
+	    for (int i = 0; i < input.length; ++i) {
+	        char c = input[i];
+	        if (Character.isDigit(c)) {
+	            String number = input[i] + "";
+	            for (int j = i + 1; j < input.length; ++j) {
+	                if (Character.isDigit(input[j])) {
+	                    number += input[j];
+	                    i = j;
+	                } else {
+	                    break;
+	                }
+	            }
+	            parsed.add(number);
+	        } else if (c == '*' || c == '/' || 
+	                   c == '+' || c == '^' || 
+	                   c == '-' || c == '(' || c == ')') {
+	            parsed.add(c + "");
+	        }
+	    }
+	    return parsed;
+	}
+	
+	public void split(String s) {
+		String[] i = s.split(" ");
+		for (String x: i) {
+			System.out.print(x);
+		}
+		System.out.println();
+	}
+	
+	public String toPostfix(String s) {
+		List<String> x = parse(s.toCharArray());
+		LinkedStack<String> stack = new LinkedStack<>();
+		String result = "";
+		
+		for (int i = 0; i < x.size(); i ++) {
+			if (isNumeric(x.get(i))) {
+				result += x.get(i) + " ";
+			}
+			
+			else if ((x.get(i)).equals("(")) {
+				stack.push(x.get(i));
+			}
+			else if ((x.get(i)).equals(")")) {
+				String h = stack.pop();
+	            while(!(h.equals("("))){
+	                  result += h + " ";
+	                  h = stack.pop();
+	              }
+			}
+			
+			else {
+				while(!stack.isEmpty() && (precedence(stack.top()) >= precedence(x.get(i)))) {
+					result += stack.pop() + " ";
+				}
+				stack.push(x.get(i));
+			}
+	
+		}
+		while (!stack.isEmpty()) {
+			result += stack.pop() + " ";
+		}
+		return result;
+	}
+	
+	public static void main(String[] args) {
+		Scanner input = new Scanner(System.in);
+		
+		System.out.println("Enter equation: ");
+		String i = input.next();
+		char[] in = i.toCharArray();
+		PF u = new PF(i);
+		String h = u.toPostfix(i);
+    	System.out.println("Converted to post-fix: " + h );
+    	u.split(h);
+    	
+		System.out.println(parse(in));
+	}
+}
