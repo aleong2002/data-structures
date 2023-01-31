@@ -1,0 +1,5 @@
+package HuffmanHW;
+
+public class UnderflowException extends RuntimeException{
+
+}
