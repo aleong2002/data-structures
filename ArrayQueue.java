@@ -1,4 +1,4 @@
-
+//hi this is a push
 public class ArrayQueue<E> implements Queue<E> {
 
 	private static final int CAPACITY = 1000;
